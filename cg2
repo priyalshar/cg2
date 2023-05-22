@@ -1,0 +1,207 @@
+****BRESLINE ALGORITHM
+
+
+#include<stdio.h>
+#include<GL/gl.h>
+#include<GL/glut.h>
+
+#define sign(x)((x>0)?1:(x<0)?-1:0);
+
+void setPixel(GLint x, GLint y)
+{
+	glBegin(GL_POINTS);
+	glVertex2i(x,y);
+	glEnd();
+}
+
+void bres_general(int x1,int y1,int x2,int y2)
+{
+	int dx,dy,x,y,d,s1,s2,steps;//swap=0,temp;
+	
+	dx=abs(x2-x1);
+	dy=abs(y2-y1);
+	s1=sign(x2-x1);
+	s2=sign(y2-y1);
+
+	/*if(dy>dx)
+	{
+		temp=dx;
+		dx=dy;
+		dy=temp;
+		swap=1;
+	}*/
+
+	if(dx>dy)
+	{
+		steps=dx;
+	}
+	else
+	{
+		steps=dy;
+	}
+        
+
+	d = 2*dy-dx;
+	x=x1;
+	y=y1;
+
+	
+	
+	int i;
+	for(i=1;i<=steps;i++)
+	{
+		setPixel(x,y);
+		if(d>=0)
+		{
+			y=y+s2;
+			d=d-2*dx;
+			x=x+s1;
+		        d=d+2*dy;
+		}
+		else
+		{
+		x=x+s1;
+		d=d+2*dy;
+		}
+		//setPixel(x,y);
+	}
+	
+	glFlush();
+}
+
+
+void draw(void)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	bres_general(20,40,620,40);
+	bres_general(620,40,620,440);
+	bres_general(620,440,20,440);
+	bres_general(20,440,20,40);
+
+	bres_general(320,440,20,240);
+	bres_general(20,240,320,40);
+	bres_general(320,40,620,240);
+	bres_general(620,240,320,440);	
+
+	bres_general(170,340,170,140);
+	bres_general(170,140,470,140);
+	bres_general(470,140,470,340);
+	bres_general(470,340,170,340);	
+
+
+		
+
+	glFlush();
+}
+
+void init()
+{
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowPosition(0,0);
+	glutInitWindowSize(0,0);
+	glutCreateWindow("Green Window");
+	glClearColor(0.0,0.0,0.0,0);
+	glColor3f(1.0,1.0,1.0);
+	gluOrtho2D(0,640,0,480);
+}
+
+int main(int argc , char **argv)
+{
+	glutInit(&argc , argv);
+	init();
+	glutDisplayFunc(draw);
+	glutMainLoop();
+	return 0;
+}
+
+
+
+
+
+****DDA1.C
+
+#include <stdio.h>
+#include <math.h>
+#include <GL/glut.h>
+#include <GL/glu.h>
+#include <GL/gl.h>
+
+
+
+double X1, Y1, X2, Y2;
+
+float round_value(float v)
+{
+  return floor(v + 0.5);
+}
+void LineDDA(void)
+{
+  double dx=(X2-X1);
+  double dy=(Y2-Y1);
+  double steps;
+  float xInc,yInc,x=X1,y=Y1;
+  /* Find out whether to increment x or y */
+  steps=(abs(dx)>abs(dy))?(abs(dx)):(abs(dy));
+  xInc=dx/(float)steps;
+  yInc=dy/(float)steps;
+
+  /* Clears buffers to preset values */
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  /* Plot the points */
+  glBegin(GL_POINTS);
+  /* Plot the first point */
+  glVertex2d(x,y);
+  int k;
+  /* For every step, find an intermediate vertex */
+  for(k=0;k<steps;k++)
+  {
+    x+=xInc;
+    y+=yInc;
+    /* printf("%0.6lf %0.6lf\n",floor(x), floor(y)); */
+    glVertex2d(round_value(x), round_value(y));
+  }
+  glEnd();
+
+  glFlush();
+}
+void Init()
+{
+  /* Set clear color to white */
+  glClearColor(1.0,1.0,1.0,0);
+  /* Set fill color to black */
+  glColor3f(0.0,0.0,0.0);
+  /* glViewport(0 , 0 , 640 , 480); */
+  /* glMatrixMode(GL_PROJECTION); */
+  /* glLoadIdentity(); */
+  gluOrtho2D(0 , 640 , 0 , 480);
+}
+void main(int argc, char **argv)
+{
+  printf("Enter two end points of the line to be drawn:\n");
+  printf("\n************************************");
+  printf("\nEnter Point1( X1 , Y1):\n");
+  scanf("%lf%lf",&X1,&Y1);
+  printf("\n************************************");
+  printf("\nEnter Point1( X2 , Y2):\n");
+  scanf("%lf%lf",&X2,&Y2);
+  
+  /* Initialise GLUT library */
+  glutInit(&argc,argv);
+  /* Set the initial display mode */
+  glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+  /* Set the initial window position and size */
+  glutInitWindowPosition(0,0);
+  glutInitWindowSize(640,480);
+  /* Create the window with title "DDA_Line" */
+  glutCreateWindow("DDA_Line");
+  /* Initialize drawing colors */
+  Init();
+  /* Call the displaying function */
+  glutDisplayFunc(LineDDA);
+  /* Keep displaying untill the program is closed */
+  glutMainLoop();
+}
+
+			
